@@ -25,7 +25,8 @@ main()
 		else
 			++nother;
 	
-	histo(ndigit, label, 10, 4, 4, '=');
+	histo(ndigit, label, 10, 2, 4, '%');	/* it's very easy to modify the settings of the histogram */
+	/* histo(heigh data, label data, array length, space between column, column width, column symbol) */
 }
 
 
