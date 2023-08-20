@@ -15,7 +15,8 @@ main()
 	int wordlen[MAXWORD];
 	char wordlabel[MAXWORD];
 	int actualwordlabel[MAXWORD];	/* the actual word label */
-	int c, i;
+	int i, c;
+	//char c;	not sure why, but the program doesn't work when c is a char
 	int state = OUT;	/* is c currently inside of a word? */
 	int length = 0;
 	char last = BLANK;
@@ -33,7 +34,7 @@ main()
 
 		if (last == BLANK && c != BLANK)
 			state = IN;
-		if (state == IN || last != BLANK) {
+		if (state == IN && last != BLANK) {
 			if (c != BLANK)
 				++length;
 			else if (c == BLANK) {
