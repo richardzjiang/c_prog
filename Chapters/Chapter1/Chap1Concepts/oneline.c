@@ -1,5 +1,6 @@
 /* this funky program will receive a c program file as input. It will then remove all unnecessary tabs, spaces, and newlines from the program. The result should still be a functioning c program, albeit unreadable for humans */
 /* to use, input into the terminal: cat input_file.c | ./oneline > output_file.c */
+/* I spent way too much time on this program. This program is much more complicated than just simply removing tabs and newlines */
 
 #include <stdio.h>
 
