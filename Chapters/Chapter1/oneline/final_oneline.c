@@ -1,6 +1,7 @@
 /* this funky program will receive a c program file as input. It will then remove all unnecessary tabs, spaces, and newlines from the program. The result should still be a functioning c program, albeit unreadable for humans */
 /* to use, input into the terminal: cat input_file.c | ./oneline > output_file.c */
 /* I spent way too much time on this program. This program is much more complicated than just simply removing tabs and newlines */
+/* The program can compress itself into one line, which is pretty neat */
 
 #include <stdio.h>
 
@@ -10,12 +11,15 @@ main()
 	int last;
 	int insidequotes;	/* is the program inside of quotes? */
 	int insidecomment;
-	//int specialcomment = 0;
+	int specialcomment;
+	int singlequotes;
 	int specialmode;	/* is the program reading #include or #define (which are special cases where newlines are required)? */
 
 	insidequotes=0;
 	insidecomment=0;
 	specialmode=0;
+	singlequotes = 0;
+	specialcomment = 0;
 	for (last='\n'; (c = getchar()) != EOF; last = c) {
 	//printf("DEBUG: %d comment: %d, special: %d\n", insidequotes, insidecomment, specialmode);
 		if (insidecomment) {
@@ -23,6 +27,20 @@ main()
 				insidecomment = 0;
 				c = 0;
 			}
+			continue;
+		}
+
+		if (specialcomment) {
+			if (c == '\n')
+				specialcomment = 0;
+			continue;
+		}
+
+		if (singlequotes) {
+			if (last == 39 && c != 39)
+				singlequotes = 0;
+			if (c != '/')	/* because if c is /, then c will be printed again below */
+				putchar(c);
 			continue;
 		}
 
@@ -34,7 +52,7 @@ main()
 		}
 
 	//printf("\nDEBUG: %c | %c\n", last, c);
-		if (c == '/')
+		if (c == '/' && last != '/')
 			continue;
 
 		if (last == '/') {
@@ -42,8 +60,15 @@ main()
 				insidecomment = 1;
 				continue;
 			}
+			if (c == '/') {
+				specialcomment = 1;
+				continue;
+			}
 			putchar(last);
 		}
+
+		if (c == 39)
+			singlequotes = 1;
 
 		if (c == '"')
 			insidequotes = 1;
@@ -58,8 +83,10 @@ main()
 			continue;
 		}
 
-		if ((last == ' ' || last == '\t' || last == '\n') && /* unfinished here. decide whether or not this character is a blank (space, tab, or newline) */
-		     c == ' ' || c == '\t' || c == '\n')
+		if (last == ' ' || last == '\t' || last == '\n')
+			if (c == last)
+				continue;
+		if (c == '\t' || c == '\n')
 			continue;
 
 		putchar(c);
