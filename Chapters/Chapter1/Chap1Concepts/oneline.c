@@ -7,53 +7,61 @@ main()
 {
 	int c;	/* setting c as char will result in an abomination of an output */
 	int last;
-	int insidequotes = 0;	/* is the program inside of quotes? */
-	int insidecomment = 0;
+	int insidequotes;	/* is the program inside of quotes? */
+	int insidecomment;
 	//int specialcomment = 0;
-	int specialmode = 0;	/* is the program reading #include or #define (which are special cases where newlines are required)? */
+	int specialmode;	/* is the program reading #include or #define (which are special cases where newlines are required)? */
 
-	while ((c = getchar()) != EOF) {
-		if (last == '/' && c == '*' && insidequotes == 0)
-			insidecomment = 1;
-		if (last == '*' && c == '/' && insidequotes == 0)
-			insidecomment = 0;
+	insidequotes=0;
+	insidecomment=0;
+	specialmode=0;
+	for (last='\n'; (c = getchar()) != EOF; last = c) {
+	//printf("DEBUG: %d comment: %d, special: %d\n", insidequotes, insidecomment, specialmode);
+		if (insidecomment) {
+			if (last == '*' && c == '/') {
+				insidecomment = 0;
+				c = 0;
+			}
+			continue;
+		}
 
-		if (!insidequotes && !insidecomment) {
-			if (c == '"')
-				insidequotes = 1;
-		} else if (insidequotes && !insidecomment){
+		if (insidequotes) {
 			if (c == '"')
 				insidequotes = 0;
+			putchar(c);
+			continue;
 		}
 
-		/*if (last == '/' && c != '*')
-			putchar(last);*/
+	//printf("\nDEBUG: %c | %c\n", last, c);
+		if (c == '/')
+			continue;
 
-		if (insidequotes == 0 && insidecomment == 0 && c == '#')	/* it's not possible to enter specialmode while inside quotes or comments */
-			specialmode = 1;
-
-		if (insidecomment == 1) {
-			last = c;
-			break;
-		}
-		else if (insidequotes == 1)
-			if (c != '\n')
-				putchar(c);
-		else if (specialmode == 1) {
-			if (c != '\n')
-				putchar(c);
-			else if (c == '\n') {
-				putchar(c);
-				specialmode == 0;
+		if (last == '/') {
+			if (c == '*') {
+				insidecomment = 1;
+				continue;
 			}
-		} else
-			if (c != '\t' && c != '\n') /* comments slash thing */
-				putchar(c);
+			putchar(last);
+		}
 
-		/* remove spaces if they are consecutive */
+		if (c == '"')
+			insidequotes = 1;
 
-		last = c;
+		if (last == '\n' && c == '#')	/* it's not possible to enter specialmode while inside quotes or comments */
+			specialmode = 1;
+		else if (specialmode && c == '\n') {
+			putchar('\n');
+			specialmode = 0;
+			continue;
+		}
+
+		if ((last == ' ' || last == '\t' || last == '\n') &&
+		     c == ' ' || c == '\t' || c == '\n')
+			continue;
+
+		putchar(c);
 	}
-	printf("quote: %d comment: %d, special: %d", insidequotes, insidecomment, specialmode);
 
 }
+
+/* unfinished */
