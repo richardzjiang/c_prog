@@ -8,7 +8,7 @@
 main()
 {
 	int c;	/* setting c as char will result in an abomination of an output */
-	int last;
+	int last, lastlast;
 	int insidequotes;	/* is the program inside of quotes? */
 	int insidecomment;
 	int specialcomment;
@@ -20,7 +20,7 @@ main()
 	specialmode=0;
 	singlequotes = 0;
 	specialcomment = 0;
-	for (last='\n'; (c = getchar()) != EOF; last = c) {
+	for (last='\n', lastlast='\n'; (c = getchar()) != EOF; lastlast = last, last = c) {
 	//printf("DEBUG: %d comment: %d, special: %d\n", insidequotes, insidecomment, specialmode);
 		if (insidecomment) {
 			if (last == '*' && c == '/') {
@@ -75,7 +75,10 @@ main()
 
 		if (last == '\n' && c == '#') {	/* it's not possible to enter specialmode while inside quotes or comments */
 			specialmode = 1;
-			putchar(last);
+			/* if (lastlast != '\n') {
+				putchar(last);
+				printf("DEBUG: Last has been put");
+			} */
 		}
 		else if (specialmode && c == '\n') {
 			putchar('\n');
