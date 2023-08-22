@@ -1,0 +1,89 @@
+Assume that there are two files that are each called "A.c" and "B.c".
+
+"A.c" looks like this:
+
+#include <stdio.h>
+
+main()
+{
+	int i;
+
+	i = 6;
+	printf("%d\n", i);
+}
+
+And "B.c" looks like this: 
+
+#include <stdio.h>
+
+main()
+{
+	int i;
+
+	i = 7;
+	printf("%d\n", i);
+}
+
+Now, if A.c and B.c are compiled together, there will be an error. That is because the variable "i" is defined twice. Once in A.c and once in B.c
+
+EXTERN VARIABLES
+
+Imagine that A.c and B.c have been edited to fix the declaration problem.
+
+In program A.c, there is:
+int i;
+
+In program B.c, there is:
+extern int i;
+
+The "extern" in B.c basically says that "this variable i has been declare somewhere else".
+If the compiler finds that i has already been declared somewhere else, the variable i in B.c will be the variable that was declared somewhere else.
+If B.c is compiled alone, then there will be an error. The "extern int i;" declares that i already exists, but doesn't care about whether or not it actually exists.
+
+STATIC VARIABLES
+
+Imagine that A.c and B.c have been edited in a different way that also fixes the declaration problem.
+
+In program A.c, there is:
+int i;
+
+In program B.c, there is:
+static int i;
+
+The "static" in B.c basically makes the i in B.c to be completely unrelated to the i in A.c. This way, they do not cause confusion to the compiler, because they are now different variables.
+In order to make the i in B.c different, the compiler may add an random extra character to the name of the variable, therefore making it unique and different from the i in A.c.
+(Please note that this is only one possible way for the compiler to do this)
+All mentions of i in B.c will refer to the "static int i;", and will have nothing to do with the i declared in A.c.
+
+Another property of "static" is the use in functions. Imagine that there is a function like this:
+int func()
+{
+	int i = 0;
+	
+	return ++i;
+}
+
+As you can tell from the code, the sole purpose of this function is to return the number of times that it has been used.
+If the function has been used 5 times, then it will return a value of 5. But the problem is that variable i is forgotten the moment the function ends.
+A way to fix this is to use "static". Using static, the function will not forget the variable when it ends, and will continue to use the same variable if the function is called upon again.
+The correct code is:
+int func()
+{
+	static int i = 0;
+	
+	return ++i;
+}
+
+EXAMPLES
+
+Imagine that the i declared in A.c has a value of 6.
+If B.c has "extern int i;", then the variable i in B.c would have a value of 6.
+But if B.c instead has "static int i;", then the variable i in B.c would not necessarily have a value of 6 because it is not related to the i declared in A.c.
+
+
+What is the difference between "declare" and "define"?
+"Declare" basically says that "I claim that this thing exists"
+"Declare" is like saying "I have $1000"
+I can say "I have $1000" as many times as I wish too.
+
+"Define" is actually putting that $1000 in the bank. You can only do it once. If you have $1000, you cannot put this same $1000 in the bank multiple times.
