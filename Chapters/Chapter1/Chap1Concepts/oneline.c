@@ -55,7 +55,7 @@ main()
 			continue;
 		}
 
-		if ((last == ' ' || last == '\t' || last == '\n') &&
+		if ((last == ' ' || last == '\t' || last == '\n') && /* unfinished here. decide whether or not this character is a blank (space, tab, or newline) */
 		     c == ' ' || c == '\t' || c == '\n')
 			continue;
 
