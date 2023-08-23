@@ -8,31 +8,37 @@
 main()
 {
 	int c;	/* setting c as char will result in an abomination of an output */
-	int last, lastlast;
+	int last;
 	int insidequotes;	/* is the program inside of quotes? */
 	int insidecomment;
 	int specialcomment;
 	int singlequotes;
 	int specialmode;	/* is the program reading #include or #define (which are special cases where newlines are required)? */
+	int nonspecial = 0;		/* for how long was the program not in specialmode? This variable is literally used only one (I couldn't think of an alternative) */
+	int whites = 0;	/* how many white space (space, tab, newline) chars were omitted? */
+	int comments = 0;	/* how many comments were omitted? */
 
 	insidequotes=0;
 	insidecomment=0;
 	specialmode=0;
 	singlequotes = 0;
 	specialcomment = 0;
-	for (last='\n', lastlast='\n'; (c = getchar()) != EOF; lastlast = last, last = c) {
+	for (last='\n'; (c = getchar()) != EOF; last = c) {
 	//printf("DEBUG: %d comment: %d, special: %d\n", insidequotes, insidecomment, specialmode);
 		if (insidecomment) {
 			if (last == '*' && c == '/') {
 				insidecomment = 0;
 				c = 0;
+				++comments;
 			}
 			continue;
 		}
 
 		if (specialcomment) {
-			if (c == '\n')
+			if (c == '\n') {
 				specialcomment = 0;
+				++comments;
+			}
 			continue;
 		}
 
@@ -75,10 +81,11 @@ main()
 
 		if (last == '\n' && c == '#') {	/* it's not possible to enter specialmode while inside quotes or comments */
 			specialmode = 1;
-			/* if (lastlast != '\n') {
+			if (nonspecial > 1) {
 				putchar(last);
-				printf("DEBUG: Last has been put");
-			} */
+				//printf("DEBUG: Last has been put");
+			}
+			nonspecial = 0;
 		}
 		else if (specialmode && c == '\n') {
 			putchar('\n');
@@ -87,14 +94,21 @@ main()
 		}
 
 		if (last == ' ' || last == '\t' || last == '\n')
-			if (c == last)
+			if (c == last) {
+				++whites;
 				continue;
-		if (c == '\t' || c == '\n')
+			}
+		if (c == '\t' || c == '\n') {
+			++whites;
 			continue;
+		}
 
+		if (specialmode == 0)
+			++nonspecial;
 		putchar(c);
 	}
+	printf("\nRemoved %d white space chars\nRemoved %d comments\n", whites, comments);
 
 }
 
-/* unfinished */
+/* mostly finished. additional testing for bugs required */
