@@ -107,7 +107,7 @@ main()
 			++nonspecial;
 		putchar(c);
 	}
-	printf("\nRemoved %d white space chars\nRemoved %d comments\n", whites, comments);
+	printf("\n/* Removed %d white space chars */\n/* Removed %d comments */\n", whites, comments);
 
 }
 
