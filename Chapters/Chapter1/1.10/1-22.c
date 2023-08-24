@@ -13,6 +13,7 @@ main()
 	int tmp;
 
 	while ((c = getchar()) != EOF) {
+		//printf("n = %d\n", n);
 		if (c == '\n') {
 			putchar(c);
 			n = 0;
@@ -20,6 +21,10 @@ main()
 			continue;
 		}
 		++n;
+		if (n == FOLDLEN) {
+			putchar('\n');
+			n = 0;
+		}
 		if (c != ' ' && c != '\t') {
 			nonblank = c;
 			for (tmp = 0; tmp < i; ++tmp)
@@ -27,10 +32,6 @@ main()
 			i = 0;
 			putchar(c);
 			continue;
-		}
-		if (n == FOLDLEN) {
-			putchar('\n');
-			n = 0;
 		}
 
 		blank[i++] = c;	/* i should never exceed FOLDLEN, or there will be problems */
