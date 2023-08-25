@@ -5,7 +5,7 @@
 
 char corr(char c);
 
-/* contains some code from 1-23 */
+/* contains some code from 1-23.c and final_oneline.c */
 main()
 {
 	int c;
@@ -22,9 +22,11 @@ main()
 	int specialcomment;
 	int insidequotes;
 	int singlequotes;
-	
-	brackets[i] = 0;
-	++i;
+
+	insidequotes = 0;
+	insidecomment = 0;
+	singlequotes = 0;
+	specialcomment = 0;	
 	for (;(c = getchar()) != EOF; last = c) {
 		if (insidecomment) {
 			if (last == '*' && c == '/') {
@@ -38,6 +40,12 @@ main()
 			if (c == '\n') {
 				specialcomment = 0;
 			}
+			continue;
+		}
+
+		if (singlequotes) {
+			if (last == '\'' && c != '\'')
+				singlequotes = 0;
 			continue;
 		}
 
@@ -61,15 +69,24 @@ main()
 			}
 		}
 
+		if (c == '\'')
+			singlequotes = 1;
+
+		if (c == '"')
+			insidequotes = 1;
+
 		if (c == '\n')
 			++line;
+
+		if (insidecomment || specialcomment || singlequotes || insidequotes)
+			continue;
 
 		if (c == '(' || c == '[' || c == '{') { 
 			brackets[i] = c;
 			++i;
 		}
-		if (c == ')') {
-			if (brackets[i-1] == '(')
+		if (c == ')' || c == ']' || c == '}') {
+			if (brackets[i-1] == corr(c))
 				--i;
 			else {
 				errors[n] = line;
@@ -78,28 +95,8 @@ main()
 				--i;
 			}
 		}
-		if (c == ']') {
-			if (brackets[i-1] == '[')
-				--i;
-			else {
-				errors[n] = line;
-				errorchar[n] = c;
-				++n;
-				--i;
-			}
-		}
-		if (c == '}') {
-			if (brackets[i-1] == '{')
-				--i;
-			else {
-				errors[n] = line;
-				errorchar[n] = c;
-				++n;
-				--i;
-			}
-		}
-
 	}
+
 	errors[n] = '\0';
 	if (n > 0) {
 		printf("n = %d\n", n);
