@@ -44,13 +44,13 @@ main()
 		}
 
 		if (singlequotes) {
-			if (last == '\'' && c != '\'')
+		       	if (last != '\\' && c == '\'')
 				singlequotes = 0;
 			continue;
 		}
 
 		if (insidequotes) {
-			if (c == '"')
+			if (last != '\\' c == '"')
 				insidequotes = 0;
 			continue;
 		}
@@ -81,25 +81,22 @@ main()
 		if (insidecomment || specialcomment || singlequotes || insidequotes)
 			continue;
 
-		if (c == '(' || c == '[' || c == '{') { 
-			brackets[i] = c;
-			++i;
-		}
+		if (c == '(' || c == '[' || c == '{')
+			brackets[i++] = c;
+
 		if (c == ')' || c == ']' || c == '}') {
-			if (brackets[i-1] == corr(c))
-				--i;
-			else {
+			if (brackets[i-1] != corr(c)) {
 				errors[n] = line;
 				errorchar[n] = c;
 				++n;
-				--i;
 			}
+			--i;
 		}
 	}
 
 	errors[n] = '\0';
 	if (n > 0) {
-		printf("n = %d\n", n);
+		//printf("n = %d\n", n);
 		for (tmp = 0; tmp < n; ++tmp)
 			printf("%d: Unbalanced '%c'. Expected corresponding '%c'.\n", errors[tmp], errorchar[tmp], corr(errorchar[tmp]));
 	}
@@ -110,19 +107,13 @@ main()
 /* corr: return the corresponding parentheses/bracket/brace character */
 char corr(char c)
 {
-	if (c == '(')
-		return ')';
-	if (c == '[')
-		return ']';
-	if (c == '{')
-		return '}';
-
-	if (c == ')')
-		return '(';
-	if (c == ']')
-		return '[';
-	if (c == '}')
-		return '{';
-
-	return 0;	
+	switch (c) {
+		case ('('): return ')';
+		case ('['): return ']';
+		case ('{'): return '}';
+		case (')'): return '(';
+		case (']'): return '[';
+		case ('}'): return '{';
+		default: return -1;
+	}
 }
