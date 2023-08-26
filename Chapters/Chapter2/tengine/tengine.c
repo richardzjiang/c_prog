@@ -23,10 +23,14 @@ main()
 	for (i = 0; i < 9; ++i)
 		grid[i] = UNOCCUPIED;	/* starting value of unoccupied slots in the grid array must be zero */
 
-	printgrid(grid, 'X');
+	for (i = 0; i < 9; ++i)
+		grid[i] = OCCUPIED;	/* this for loop is for debug. Please delete */
+
+	printgrid(grid, '%');
 }
 
 /* tree: a function that is incredibly similar to the minimax function that I definitely did not copy off of wikipedia */
+/* I believe that the "difficulty" of the engine can be modified by changing the value of depth. Higher values means that the engine is "smarter" */
 int tree(int value, int depth, int maximizing, int *grid)
 {
 	int i;
@@ -91,10 +95,11 @@ int eval(int position, int *grid)
 /* printgrid: receive the array containing the tic-tac-toe grid data as input, and print the grid. symbol can be X or O (or something else even) */
 printgrid(int *grid, char symbol)
 {
-	int i, tmp, n;
+	int i, tmp;
+	int n = 0;
 	for (i = 0; i < 3; ++i) {	/* 3 is vertical dimension of grid */
 		for (tmp = 0; tmp < 3; ++tmp) {	/* 3 is horizontal dimension of grid */
-			if (grid[n] == 1)
+			if (grid[n] == OCCUPIED)
 				printf("[%c]", symbol);
 			else
 				printf("[ ]");
