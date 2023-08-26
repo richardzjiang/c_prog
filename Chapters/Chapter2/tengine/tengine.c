@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #define TRUE 1
 #define FALSE 0
 #define GOODOCCUPIED 1	/* occupied by engine */
@@ -56,7 +57,7 @@ main()
 			tmp = bestmove(DEPTH, grid);
 			grid[tmp] = GOODOCCUPIED;
 		}
-		else if (playturn == TRUE) {
+		else if (playerturn == TRUE) {
 			printf("Enter your move (enter a number 1-9): ");
 			scanf("%d", &tmp);
 			grid[tmp] = BADOCCUPIED;
@@ -136,7 +137,7 @@ int eval(int pos, int *grid)
 {
 	int value;
 
-	if (grid[pos] == GOODOCCUPIED || grid[i] == BADOCCUPIED)	/* the grid position that is to be evaluated is already occupied */
+	if (grid[pos] == GOODOCCUPIED || grid[pos] == BADOCCUPIED)	/* the grid position that is to be evaluated is already occupied */
 		return -INFINITY;	/* cuz playing in a position that is already occupied is a dogwater decision */
 
 	switch (pos) {	/* this value calculation statement could probably be changed tbh (it's not very accurate) */
@@ -144,7 +145,7 @@ int eval(int pos, int *grid)
 		case 1: value = grid[0] + grid[2] + grid[4] + grid[7];
 		case 2: value = grid[1] + grid[4] + grid[5] + grid[0] + grid[6] + grid[8];
 		case 3: value = grid[0] + grid[4] + grid[6] + grid[5];
-		case 4: value = grid[0] + grid[1] + grid[2] + grid[3] + grid[4] + grid[5] + grid[6] + grid[7] grid[8];
+		case 4: value = grid[0] + grid[1] + grid[2] + grid[3] + grid[4] + grid[5] + grid[6] + grid[7] + grid[8];
 		case 5: value = grid[2] + grid[4] + grid[8] + grid[3];
 		case 6: value = grid[3] + grid[4] + grid[7] + grid[0] + grid[2] + grid[8];
 		case 7: value = grid[4] + grid[6] + grid[8] + grid[1];
@@ -195,4 +196,9 @@ int min(int a, int b)
 		return a;	/* or b, it doesn't matter */
 }
 
-int openingbook
+int openingbook()
+{
+	srand(time(NULL));
+	int random = rand() % 9 + 1;	/* using random numbers for opening book is only a temporary solution */
+	return random;
+}
