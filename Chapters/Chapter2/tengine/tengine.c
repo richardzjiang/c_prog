@@ -18,6 +18,7 @@ int tree(int value, int depth, int maximizing, int *grid);
 int bestmove(int depth, int *grid);
 int eval(int pos, int *grid);
 int printgrid(int *grid, char playersymbol, char computersymbol);
+int wincheck(int *grid);
 int openingbook();
 
 main()
@@ -25,18 +26,23 @@ main()
 	int i;
 	int tmp;
 	int grid[9];
-	char playersymbol;
+	char playersymbol = 0;	/* anything that isn't X or O */
 	char computersymbol;
 	int playerturn;
 	int computerturn;
-	int movestaken;	/* number of moves taken by both the engine and the opponent(the person that plays against the engine) */
+	int movestaken = 0;	/* number of moves taken by both the engine and the opponent(the person that plays against the engine) */
 
 	for (i = 0; i < 9; ++i)
 		grid[i] = UNOCCUPIED;	/* starting value of unoccupied slots in the grid array must be zero */
 
-	while (playersymbol != 'X' && playersymbol != 'O') {
+
+	while (playersymbol == 0) {
 		printf("Choose a symbol: ");
-		scanf("%c", &playersymbol);
+		scanf("%c", &tmp);
+		if (tmp == 'X' || tmp == 'O')
+			playersymbol = tmp;
+		else
+			continue;
 	}
 
 	if (playersymbol == 'O') {
@@ -51,19 +57,77 @@ main()
 		computersymbol = 'O';
 	}
 
+
 	printgrid(grid, playersymbol, computersymbol);
 	while (movestaken < 9) {
 		if (computerturn == TRUE) {
 			tmp = bestmove(DEPTH, grid);
-			grid[tmp] = GOODOCCUPIED;
+			grid[tmp - 1] = GOODOCCUPIED;
+			computerturn = FALSE;
+			playerturn = TRUE;
 		}
 		else if (playerturn == TRUE) {
 			printf("Enter your move (enter a number 1-9): ");
 			scanf("%d", &tmp);
-			grid[tmp] = BADOCCUPIED;
+			grid[tmp - 1] = BADOCCUPIED;
+			computerturn = TRUE;
+			playerturn = FALSE;
+			continue;
 		}
+
+		if (wincheck(grid) == 1) {
+			printf("\nComputer has won!\n");
+			continue;
+		}
+		if (wincheck(grid) == 1) {
+			printf("\nPlayer has won!\n");
+			continue;
+		}
+
+		++movestaken;
 		printgrid(grid, playersymbol, computersymbol);
+
 	}
+}
+
+/* wincheck: checks to see if the computer or player has won */
+int wincheck(int *grid)
+{
+	if (grid[0] * grid[1] * grid[2] == 1)
+		return 1;
+	if (grid[0] * grid[3] * grid[6] == 1)
+		return 1;
+	if (grid[2] * grid[5] * grid[8] == 1)
+		return 1;
+	if (grid[6] * grid[7] * grid[8] == 1)
+		return 1;
+	if (grid[2] * grid[4] * grid[6] == 1)
+		return 1;
+	if (grid[0] * grid[4] * grid[8] == 1)
+		return 1;
+	if (grid[3] * grid[4] * grid[5] == 1)
+		return 1;
+	if (grid[1] * grid[4] * grid[7] == 1)
+		return 1;
+
+	if (grid[0] * grid[1] * grid[2] == 8)
+		return 2;
+	if (grid[0] * grid[3] * grid[6] == 8)
+		return 2;
+	if (grid[2] * grid[5] * grid[8] == 8)
+		return 2;
+	if (grid[6] * grid[7] * grid[8] == 8)
+		return 2;
+	if (grid[2] * grid[4] * grid[6] == 8)
+		return 2;
+	if (grid[0] * grid[4] * grid[8] == 8)
+		return 2;
+	if (grid[3] * grid[4] * grid[5] == 8)
+		return 2;
+	if (grid[1] * grid[4] * grid[7] == 8)
+		return 2;
+
+	return 0;
 }
 
 /* tree: a function that is incredibly similar to the minimax function that I definitely did not copy off of wikipedia */
@@ -96,6 +160,7 @@ int tree(int value, int depth, int maximizing, int *grid)
 			}	
 		return value;
 	}
+	printf("(%d, %d)", depth, value);	//debug
 }
 
 /* bestmove: using the tree function, bestmove calculates the best move for the computer to take */
@@ -104,11 +169,19 @@ int bestmove(int depth, int *grid)
 	int i;
 	int value;
 
+	for (i = 0; i < 9; ++i)
+		tmp[i] = grid[i];
+
 	value = -INFINITY;
 
 	for (i = 0; i < 9; ++i)
-		if (grid[i] == UNOCCUPIED)
-			value = max(value, tree(eval(i, grid), depth, FALSE, grid));
+		if (grid[i] == UNOCCUPIED) {
+			grid[i] = GOODOCCUPIED;
+			value = max(value, tree(eval(i, tmp), depth, FALSE, grid));
+			printf("i = %d, tree = %d\n", i, tree(eval(i, tmp), depth, FALSE, grid)); //debug
+			grid[i] = UNOCCUPIED;
+		}
+	printf("bestmove output: value = %d", value);	//debug
 	return value;
 }
 	
