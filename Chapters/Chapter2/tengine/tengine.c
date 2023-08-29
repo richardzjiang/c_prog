@@ -1,4 +1,5 @@
 /* A chess engine, except for tic-tac-toe. I guess it's a tic-tac-toe engine? tengine for short */
+/* this program is super-duper unfinished and I don't think that I have the skill to code a truly 'intelligent' tengine (yet) */
 
 #include <stdio.h>
 #include <math.h>
@@ -132,6 +133,7 @@ int wincheck(int *grid)
 
 /* tree: a function that is incredibly similar to the minimax function that I definitely did not copy off of wikipedia */
 /* I believe that the "difficulty" of the engine can be modified by changing the value of depth. Higher values means that the engine is "smarter" */
+/* tree: a recursive function that analyses every single possible future game scenario (up to a limited point). it can be used to calculate which move will have the future scenarios that are best for the computer */
 int tree(int value, int depth, int maximizing, int *grid)
 {
 	int i;
@@ -205,7 +207,7 @@ int minimax(int node, int depth, int maximizingPlayer)
 }
 */
 
-/* eval: receive input of the current state of the tictactoe grid, and a position to evaluate. It will evaluate how good it would be to play that position */
+/* eval: receive input of the current state of the tictactoe grid, and a position to evaluate. It will evaluate how good it would be to play that position. used in the tree function */
 int eval(int pos, int *grid)
 {
 	int value;
@@ -248,7 +250,7 @@ printgrid(int *grid, char playersymbol, char computersymbol)
 	}
 }
 
-
+/* max: return the largest number out of its two inputs */
 int max(int a, int b)
 {
 	if (a > b)
@@ -259,6 +261,7 @@ int max(int a, int b)
 		return a;	/* or b, it doesn't matter */
 }
 
+/* min: return the smallest number out of its two inputs */
 int min(int a, int b)
 {
 	if (a > b)
@@ -269,6 +272,7 @@ int min(int a, int b)
 		return a;	/* or b, it doesn't matter */
 }
 
+/* if the tengine must go first, then the openingbook function will decide which move to go */
 int openingbook()
 {
 	srand(time(NULL));
