@@ -27,12 +27,13 @@ int binsearch(int x, int v[], int n)
 
 	low = 0;
 	high = n - 1;
-	while (low <= high) {	/* to be honest, i'm not sure why changing '<=' to '<' works, but it does */
-		mid = (low+high) / 2;
+	mid = (low+high) / 2;
+	while (x != v[mid]) {	/* to be honest, i'm not sure why changing '<=' to '<' works, but it does */
 		if (x < v[mid])
 			high = mid - 1;
 		else	/* x >= v[mid] */
-			low = mid;	/* low cannot equal mid + 1, because now there is the possibility that x = v[mid] */
+			low = mid + 1;	/* low cannot equal mid + 1, because now there is the possibility that x = v[mid] */
+		mid = (low+high) / 2;
 		printf("DEBUG: low=%d\thigh=%d\tmid=%d\n", low, high, mid);
 	}
 	if (mid == x)
