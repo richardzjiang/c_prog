@@ -3,32 +3,50 @@
 #include <stdio.h>
 
 int chartype(char c);
+void escape(char s1[], char s2[]);
 
 main()
 {
+	int c;
+	int i = 0;
+	char s1[1000];
+	char s2[1000];
+	int tmp;
 
+	printf("Do Ctrl-D when you have finished inputting\n");
+	while ((c = getchar()) != EOF)
+		s1[i++] = c;
+
+	s1[i] = '\0';
+	escape(s1, s2);
+
+	//for (tmp = 0; tmp < i; ++tmp)
+	//	printf("s2 = %c\n", s2[tmp]);
+	
+	printf("%s\n", s2);
 }
-void escape(char s1, char s2)
+
+void escape(char s1[], char s2[])
 {
 	int c;
 	int last;
 	int lastlast;
 	int i, n;
 
-	for (last = 0, lastlast = 0; ((c = s[i]) != '\0'); lastlast = last, last = c) {	/* does lastlast = last execute first or does last = c execute first? */
+	for (last = 0, lastlast = 0, i = 0, n = 0; ((c = s1[i]) != '\0'); lastlast = last, last = c, ++i) {	/* does lastlast = last execute first or does last = c execute first? */
 		if (lastlast >= 'a' && lastlast <= 'z') {
 			if (last == '-') {
 				if (c >= 'a' && c <= 'z') {
 					if (lastlast < c)
 						for (++lastlast; lastlast <= c; ++lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					else if (lastlast > c)
 						for (++lastlast; lastlast >= c; --lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					continue;
 				}
 				else {
-					putchar('-');
+					putchar('*');
 					//putchar(lastlast);
 					//putchar(last);
 					//continue;
@@ -45,14 +63,14 @@ void escape(char s1, char s2)
 				if (c >= 'A' && c <= 'Z') {
 					if (lastlast < c)
 						for (++lastlast; lastlast <= c; ++lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					else if (lastlast > c)
 						for (++lastlast; lastlast >= c; --lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					continue;
 				}
 				else {
-					putchar('-');
+					putchar('*');
 					/*
 					putchar(lastlast);
 					putchar(last);
@@ -70,14 +88,14 @@ void escape(char s1, char s2)
 				if (c >= '0' && c <= '9') {
 					if (lastlast < c)
 						for (++lastlast; lastlast <= c; ++lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					else if (lastlast > c)
 						for (++lastlast; lastlast >= c; --lastlast)
-							putchar(lastlast);
+							s2[n++] = lastlast;
 					continue;
 				}
 				else {
-					putchar('-');
+					putchar('*');
 					/*
 					putchar(lastlast);
 					putchar(last);
@@ -97,7 +115,7 @@ void escape(char s1, char s2)
 		}*/
 		if (c == '-')
 			continue;
-		putchar(c);
+		s2[n++] = c;
 	}
 }
 
