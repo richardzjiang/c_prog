@@ -11,8 +11,8 @@ main()
 {
 	int n;
 	int b;
+	int x, p;
 	char s[1000];
-	char test[100] = "POTATO\0";
 
 	printf("Enter number: ");
 	scanf("%d", &n);
@@ -21,9 +21,8 @@ main()
 
 	itob(n, s, b);
 
-	//reverse(test);
-	printf("test = %s\n", test);
-	printf("s = %s\n", s);
+	//printf("power(8,1) = %d\n", power(8,0));
+	printf("%s\n", s);
 }
 
 /* itoa: convert n to characters in s */
@@ -32,23 +31,42 @@ void itob(int n, char s[], int b)
 {
 	int i, sign;
 	int islarge = 0;	/* possibly the worst solution to solving this problem */
+	int number;
 	int digit;
+	int tmp;
 
-	printf("started itob\n");
-	printf("n = %d\n", n);
-	printf("b = %d\n", b);
+	//printf("started itob\n");
+	//printf("n = %d\n", n);
+	//printf("b = %d\n", b);
 	if ((sign = n) < 0 )
 		n = -n;		/* make n positive */
 	i = 0;
 	if (sign < 0)
 		s[i++] = '-';
+	digit = 0;
+	tmp = 1;
+	while (tmp*b <= n) {
+		++digit;
+		tmp *= b;
+		//printf("power(b, digit) = %d\n", tmp);
+	}
 	do {
-		for (digit = 0; power(b, digit) < n; ++digit) {
-			printf("digit = %d\n", digit);
-			printf("power(b, digit) = %d\n", power(b, digit));
+		//printf("digit = %d\npower(b, digit) = %d\nn = %d\n", digit, power(b, digit), n);
+		if (power(b, digit) <= n) {
+			number = 0;
+			while (power(b, digit)*(number+1) <= n)
+				++number;
+			//printf("number = %d\n", number);
+			s[i++] = itoc(number);
+			//putchar(itoc(number));
+			//printf("putchar number\n");
+			n -= power(b, digit) * number;
+		} else {
+			s[i++] = '0';
+			//putchar('0');
 		}
-		s[i++] = itoc(digit);
-	} while ((n -= power(b, digit)) > 0);
+		--digit;
+	} while (digit >= 0);
 	s[i] = '\0';
 	//if (islarge == 1)
 	//	++s[0];
@@ -57,11 +75,13 @@ void itob(int n, char s[], int b)
 
 int power(int x, int p)
 {
-	if (p == 0)
-		return 0;
-	--p;
-	while (p-- > 0)
-		x *= x;
+	int tmp;
+	if (p == 0) {
+		return 1;
+	}
+	//--p;
+	for (tmp = x; p > 1; --p)
+		x *= tmp;
 	return x;
 }
 
