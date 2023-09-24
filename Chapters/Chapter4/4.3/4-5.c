@@ -8,6 +8,7 @@
 int getop(char []);
 void push(double);
 double pop(void);
+float dtor(float d);
 
 /* reverse Polish calculator */
 main()
@@ -39,6 +40,15 @@ main()
 			else
 				printf("error: zero divisor\n");
 			break;
+		case '%':
+			op2 = pop();
+			op1 = pop();
+			if (op1 < 0 || op2 < 0) {
+				printf("error: negative number\n");
+				break;
+			}
+			push((int) op1 % (int) op2);
+			break;
 		case '^':
 			op2 = pop();
 			op1 = pop();
@@ -48,7 +58,7 @@ main()
 				printf("undefined: zero to the power of zero\n");
 			break;
 		case 0:
-			push(sin(pop()));
+			push(sin(dtor((float) pop())));
 			break;
 		case 1:
 			push(exp(pop()));
@@ -68,6 +78,12 @@ main()
 
 int sp = 0;		/* next free stack position */
 double val[MAXVAL];	/* value stack */
+
+/* dtor: convert degrees to radians */
+float dtor(float d)
+{
+	return ((d / 180) * M_PI);
+}
 
 /* push: push f onto value stack */
 void push(double f)
@@ -111,30 +127,29 @@ int getop(char s[])
 		while (isdigit(s[++i] = c = getch()))	/* while loop runs until getch() is no longer a digit */
 			;
 	n = 0;	/* n actually points to the last occupied slot of test, not the next empty one */
-	if (isalpha(c)) {
-		while (isalpha(test[++n] = c = getch())) {
-			if (n > 2) {
-				printf("error: unknown command %c\n", test[0]);
-				printf("error: unknown command %c\n", test[1]);
-				printf("error: unknown command %c\n", test[2]);
-				return c;
-			}
+	if (isalpha(c)) {	/* identified error: the 'word' that is collected by test[] is shifted right by one char */
+		test[n++] = c;	/* without this, c's value will be erased by 'c = getch()' */
+		while (isalpha(test[n++] = c = getch())) {
+			if (n > 2)	/* the group of letters exceeds three characters. therefore, it cannot be sin, exp or pow */
+				break;
 		}
-		if (n < 2) {
-			test[n] = '\0';
+		test[n] = '\0';
+		if (n < 2 || n > 3) {
 			for (n = 0; test[n] != '\0'; ++n)
-				printf("error: unknown command %c\n", test[n]);
+				printf("error: n < 2 || n > 3: unknown command %c\n", test[n]);
 			return c;
 		}
-		if (test[0] == 's' && test[1] == 'i' && test[2] == 'n')
+		if (test[0] == 's' && test[1] == 'i' && test[2] == 'n') {
 			return 0;
-		if (test[0] == 'e' && test[1] == 'x' && test[2] == 'p')
+		}
+		if (test[0] == 'e' && test[1] == 'x' && test[2] == 'p') {
 			return 1;
-		if (test[0] == 'p' && test[1] == 'o' && test[2] == 'w')
+		}
+		if (test[0] == 'p' && test[1] == 'o' && test[2] == 'w') {
 			return '^';
-		printf("error: unknown command %c\n", test[0]);
-		printf("error: unknown command %c\n", test[1]);
-		printf("error: unknown command %c\n", test[2]);
+		}
+		for (n = 0; test[n] != '\0'; ++n)
+			printf("error: not sin, exp, pow: unknown command %c\n", test[n]);
 	}
 	if (c == '.')		/* collect fraction part */
 		while (isdigit(s[++i] = c = getch()))
