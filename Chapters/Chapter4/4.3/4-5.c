@@ -1,3 +1,5 @@
+/* Add access to library functions like sin, exp, and pow. See <math.h> in Appendix B, Section 4. */
+
 #include <stdio.h>
 #include <stdlib.h>	/* for atof() */
 #include <math.h>
