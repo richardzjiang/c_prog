@@ -1,44 +1,33 @@
+/* given an input consisting of words, it will output only the words that are WORDSIZE letters long */
+/* please note that Windows uses a different way of doing newline. Windows txt files copied to here will have problems */
+
 #include <stdio.h>
 
+#define MAXWORD 50
 #define WORDSIZE 5
 #define TRUE 1
 #define FALSE 0
 
 main()
 {
-    int c, i, tmp;
-    int iswriting = TRUE;
-    int word[WORDSIZE+2];
-
-    word[WORDSIZE+1] = '\0';
-
-    for (i = 0; (c = getchar()) != EOF;) {
-        if (c == '\n') {
-            if (iswriting == TRUE) {
-                for (tmp = 0; tmp < WORDSIZE; ++tmp)
-                    printf("%c", word[tmp]);
-                putchar('\n');
-            }
-            for (tmp = 0; tmp < WORDSIZE; ++tmp)
-                    word[tmp] = '\0';
-            iswriting = TRUE;
-            i = 0;
-            continue;
-        }
-        if (i > WORDSIZE) {
-            iswriting = FALSE;
-            /*
-            if (word[WORDSIZE] != '\n') {
-                //while ((c = getchar()) != '\n');
-                //i = 0;
-                continue;
-            } else if (word[WORDSIZE] == '\n') {
-                printf("%s", word);
-                i = 0;
-                continue;
-            } */
-        }
-        if (iswriting == TRUE)
-            word[i++] = c;
-    }
+	int c;
+	int word[MAXWORD];
+	int length;
+	
+	for (length = 0; (c = getchar()) != EOF;) {
+		if ((length + 2) == MAXWORD) {
+			printf("Word too long!\n");
+			length = 0;
+			continue;
+		}
+		word[length++] = c;
+		if (c == '\n' || c == EOF) {
+			length -= 1;
+			if (length == WORDSIZE) {
+				word[WORDSIZE] = '\0';
+				printf("%ls\n", word);
+			}
+			length = 0;
+		}
+	}
 }
