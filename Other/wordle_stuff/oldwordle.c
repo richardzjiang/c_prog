@@ -24,7 +24,7 @@ int green[5];
 main()
 {
 	int i, pos, tmp, tmp2;
-	char c, nextchar;
+	char c;
 	char word[6];
 	extern int green[5];
 	int isvalid;
@@ -33,28 +33,15 @@ main()
 	isvalid = TRUE;
 	reset();
 
-	setletter('a', BLACK);
-	setletter('b', BLACK);
-	setletter('o', BLACK);
-	setletter('u', BLACK);
-	setletter('t', BLACK);
-	setletter('g', BLACK);
-	setletter('r', BLACK);
-	setletter('a', BLACK);
-	setletter('b', BLACK);
-	setletter('s', BLACK);
-	setletter('a', BLACK);
-	setletter('d', BLACK);
-	setletter('s', BLACK);
-	setletter('n', BLACK);
-	setletter('s', BLACK);
-
-	setletter('e', YELLOW);
-	setletter('h', YELLOW);
-
-	setletter('c', GREEN);
-	setletter('h', GREEN);
-	setletter('i', GREEN);
+	setletter('A', GREEN);	
+	setletter('T', GREEN);
+	setletter('E', YELLOW);
+	setletter('B', GREEN);	
+	setletter('O', GREEN);	
+	setletter('U', GREEN);	
+	setletter('S', GREEN);
+	green[0] = TRUE;
+	green[4] = TRUE;
 
 	/*
 	printf("Enter all letters that are black.\nCapitalization is ignored.\nEnter the number zero to stop.\n");
@@ -94,19 +81,14 @@ main()
 
 	i = 0;
 	c = 0;
-	for (i = 0, c = 0; (nextchar = getchar()) != EOF; c = nextchar) {
-		printf("DEBUG: nextchar = %c\nDEBUG: c = %c\nDEBUG: i = %d\n", nextchar, c, i);
+	while ((c = getchar()) != EOF) {
 		if (c == '\n') {
 			//printf("DEBUG: c = \n");
 			i = 0;
 			continue;
 		}
-		if (i == 5 && nextchar == '\n') {
-			printf("DEBUG: i == 5\n");
-			printf("DEBUG: within i == 5, word = %s\n", word);
-			printf("DEBUG: within i==5, nextchar = %c\n", nextchar);
-			for (tmp = 0; tmp < 5; ++tmp) {
-				if (green[tmp] == TRUE) {
+		for (tmp = 0; tmp < 5; ++tmp) {
+			if (green[tmp] == TRUE) {
 					if (!checkstatus(word[tmp], GREEN))
 						isvalid = FALSE;
 					else
@@ -154,13 +136,14 @@ main()
 				i = 0;
 				isvalid = TRUE;
 			}
+		/*
 		} else if (i == 5 && nextchar != '\n') {
 			//printf("DEBUG: skipping to the end of word\n");
 			while ((nextchar = getchar()) != '\n')
 				;
 			c = nextchar;
 			continue;
-		}
+		} */
 		//printf("DEBUG: c = %c\n", c);
 		if (isalpha(c)) {
 			//printf("isalpha(c)\n");
