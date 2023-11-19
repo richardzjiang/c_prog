@@ -1,46 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>	/* for atof() */
-#include <ctype.h>	/* for isalpha() */
 
 #define MAXOP	100	/* max size of operand or operator */
 #define NUMBER '0'	/* signal that a number was found */
-#define VARIABLE '1'	/* signal that a variable was found */
-#define VAR_DEFAULT ':'
-#define VAR_NO_VALUE '$'	/* popvar(), variable has no value to be popped */
 
 int getop(char []);
 void push(double);
 double pop(void);
-double popvar(char name);
-void pushvar(char name, double value);
-
-char varname;	/* when the getop function discovers a letter, it assumes it's a variable. it returns VARIABLE to signal that a variable has been found, and stores the letter into varname */
-char varstatus;	/* based on what char is stored in here, can see what the status of the variable. */
 
 /* reverse Polish calculator */
 main()
 {
 	int type;
-	double tmp;
 	double op2;
-	char s[MAXOP];	/* used in getop(). stores a single operator. operators such as "1.2034" are stored as string form here. */
+	char s[MAXOP];
 
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
 		case NUMBER:
-			push(atof(s));	/* stands for ASCII to floating point */
-			break;
-		case VARIABLE:
-			if (varstatus == VAR_NO_VALUE)
-				printf("error: no value stored in variable\n");
-			else
-				push(popvar(varname));
-			break;
-		case '=':
-			tmp = pop();
-			pop();
-			pushvar(varname, tmp);	/* problem with varname when the second operator is also a variable */
-			push(tmp);
+			push(atof(s));
 			break;
 		case '+':
 			push(pop() + pop());
@@ -71,6 +49,7 @@ main()
 }
 
 #define MAXVAL 100	/* maximum depth of val stack */
+
 int sp = 0;		/* next free stack position */
 double val[MAXVAL];	/* value stack */
 
@@ -104,7 +83,7 @@ int getop(char s[])
 {
 	int i, c;
 
-	while ((s[0] = c = getch()) == ' ' || c == '\t')	/* skips white spaces. when this loop is done, c is a non-white-space char */
+	while ((s[0] = c = getch()) == ' ' || c == '\t')
 		;
 	s[1] = '\0';
 	if (!isdigit(c) && c != '.')
@@ -117,12 +96,8 @@ int getop(char s[])
 		while (isdigit(s[++i] = c = getch()))
 			;
 	s[i] = '\0';
-	if (c != EOF)	/* check for bugs here, order may matter */
+	if (c != EOF)
 		ungetch(c);
-	if (isalpha(c)) {
-		varname = c;
-		return VARIABLE;
-	}
 	return NUMBER;
 }
 
@@ -144,40 +119,45 @@ void ungetch(int c)	/* push character back on input */
 		buf[bufp++] = c;
 }
 
-char varnames[52];	/* 26 lowercase letters plus 26 uppercase letters is 52 letters */
-double varval[52];
-int varindex = 0;
+char varname[26];
+int varval[26];
+int index;
 
-double popvar(char name)
+void resetvar()
 {
-	int i;
+	extern int index;
 
-	varstatus = VAR_DEFAULT;
-
-	//if (!isalpha(name))
-	//	return 0.0;
-	// it's impossible for a name to not be a letter
-	for (i = 0; i < varindex; ++i) {
-		if (varnames[i] == name)
-			return varval[i];
-	}
-	varstatus = VAR_NO_VALUE;
-	return 0.0;
+	index = 0;
 }
 
-void pushvar(char name, double value)
+void invar(char name, int value)
 {
+	extern char varname[26];
+	extern int varval[26];
+	extern int index;
+	int match;
+	int tmp;
+
+	for (tmp = 0, match = -1; tmp < index; ++tmp)
+		if (varname[tmp] == name)
+			match = tmp;
+	if (match == -1) {
+		varname[index] = name;
+		varval[index] = value;
+		++index;
+	} else
+		varval[match] = value;
+}
+
+int outvar(char name)
+{
+	extern char varname[26];
+	extern int varval[26];
+	extern int index;
 	int i;
 
-	if (!isalpha(name))
-		return;
-	for (i = 0; i < varindex; ++i) {
-		if (varnames[i] == name) {
-			varval[i] == value;
-			return;
-		}
-	}
-	varnames[varindex] = name;
-	varval[varindex] = value;
-	++varindex;
+	for (i = 0; i < index; ++i)
+		if (varname[i] == name)
+			break;
+	return varval[i];
 }
