@@ -15,7 +15,15 @@ double popvar(char name);
 void pushvar(char name, double value);
 
 char varname;	/* when the getop function discovers a letter, it assumes it's a variable. it returns VARIABLE to signal that a variable has been found, and stores the letter into varname */
-char varstatus;	/* based on what char is stored in here, can see what the status of the variable. */
+char varstatus = VAR_NO_VALUE;	/* based on what char is stored in here, can see what the status of the variable. */
+
+/* bugs:
+ * in popvar(), i starts at 0, and varindex starts at 0 also. therefore, the while loop won't execute because i won't be less than varindex.
+ * (fixed) varstatus has no value when the program starts. therefore, in case VARIABLE, the program will go to the else and try to extract a value from the variable even though it has no value.
+ * after assigning a value to a variable that previously had no value, the value of the variable will actually be its name
+ * case '=' requires the variables name so that it can be used in pushvar. this means that I pushed the variable's name into the stack. (continued)
+ * but this also means that the stack treats this name as a value, and such gives its name as its value
+ */
 
 /* reverse Polish calculator */
 main()
@@ -31,16 +39,21 @@ main()
 			push(atof(s));	/* stands for ASCII to floating point */
 			break;
 		case VARIABLE:
-			if (varstatus == VAR_NO_VALUE)
+			if (varstatus == VAR_NO_VALUE) {	/* from popvar() */
 				printf("error: no value stored in variable\n");
-			else
-				push(popvar(varname));
+				push(varname);	/* refer to the vartest.c program for confirmation that this works */
+			} else {
+				tmp = popvar(varname);	/* bug: why does it pop the variable's name */
+				printf("DEBUG: popvar(varname) = %f\n", tmp);
+				push(tmp);	/* push into the stack the value of the variable */
+			}
 			break;
 		case '=':
-			tmp = pop();
-			pop();
-			pushvar(varname, tmp);	/* problem with varname when the second operator is also a variable */
-			push(tmp);
+			op2 = pop();	/* the number that is gonna be assigned to the variable */
+			tmp = pop();	/* although is be a double, should be treated as a char. this char is the name of the variable */
+			printf("DEBUG: variable name: %f\n", tmp);
+			pushvar((char) tmp, op2);	/* refer to the vartest.c program for confirmation that this works */
+			push(op2);
 			break;
 		case '+':
 			push(pop() + pop());
@@ -107,7 +120,7 @@ int getop(char s[])
 	while ((s[0] = c = getch()) == ' ' || c == '\t')	/* skips white spaces. when this loop is done, c is a non-white-space char */
 		;
 	s[1] = '\0';
-	if (!isdigit(c) && c != '.')
+	if (!isdigit(c) && !isalpha(c) && c != '.')
 		return c;	/* not a number */
 	i = 0;
 	if (isdigit(c))		/* collect integer part */
@@ -117,12 +130,12 @@ int getop(char s[])
 		while (isdigit(s[++i] = c = getch()))
 			;
 	s[i] = '\0';
-	if (c != EOF)	/* check for bugs here, order may matter */
-		ungetch(c);
 	if (isalpha(c)) {
 		varname = c;
 		return VARIABLE;
 	}
+	if (c != EOF)
+		ungetch(c);
 	return NUMBER;
 }
 
@@ -161,6 +174,7 @@ double popvar(char name)
 		if (varnames[i] == name)
 			return varval[i];
 	}
+	printf("DEBUG: popvar: i = %d\n", i);
 	varstatus = VAR_NO_VALUE;
 	return 0.0;
 }
@@ -169,6 +183,7 @@ void pushvar(char name, double value)
 {
 	int i;
 
+	printf("DEBUG: pushvar: name = %c\n", name);
 	if (!isalpha(name))
 		return;
 	for (i = 0; i < varindex; ++i) {
