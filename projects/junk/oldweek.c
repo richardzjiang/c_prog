@@ -35,25 +35,21 @@ main()
     } else {
         printf("You are probably bad at multiple choice tests.\n");
         goto end;
-    }
-    printf("Take out your cheats? (Y/N)\n");
-    printf(": ");
-    scanf(" %c", &c);   /* the space before %c is intentional */
-    if (c == 'N' || c == 'n') {
-        cheat = FALSE;
-        goto startofday;
-    }
-    else if (c == 'Y' || c == 'y')
-        cheat == TRUE;
-    else {
-        printf("You are probably bad at multiple choice tests.\n");
-        goto end;
-    }
+}
+printf("Take out your cheats? (Y/N)\n");
+printf(": ");
+scanf(" %c", &c);   /* the space before %c is intentional */
+if (c == 'N' || c == 'n') {
+cheat = FALSE;
+goto startofday;
+} else if (c != 'Y' && c != 'y') {
+printf("You are probably bad at multiple choice tests.\n");
+goto end;
+}
     
-    if (cheat == TRUE) {
-        printf("What are your current grades?\n");
+printf("What are your current grades?\n");
         printf("English grade: ");
-        scanf("%d", &englishgrade);
+        scanf("%lg", &englishgrade);
         if (englishgrade <= 0) {
             printf("Your grade was so low that you managed to break the laws of physics.\n");
             goto expelled;
@@ -63,7 +59,7 @@ main()
         
 
         printf("History grade: ");
-        scanf("%d", &historygrade);
+        scanf("%lg", &historygrade);
         if (historygrade <= 0) {
             printf("Your grade was so low that you managed to break the laws of physics.\n");
             goto expelled;
@@ -73,7 +69,7 @@ main()
         
 
         printf("Social studies grade: ");
-        scanf("%d", &socialgrade);
+        scanf("%lg", &socialgrade);
         if (socialgrade <= 0) {
             printf("Your grade was so low that you managed to break the laws of physics.\n");
             goto expelled;
@@ -83,7 +79,7 @@ main()
         
         
         printf("Math grade: ");
-        scanf("%d", &mathgrade);
+        scanf("%lg", &mathgrade);
         if (mathgrade <= 0) {
             printf("Your grade was so low that you managed to break the laws of physics.\n");
             goto expelled;
@@ -101,7 +97,6 @@ main()
         /* lower difficulties have nicer people */
         /* bug: difficulty level doesn't seem to be changed the range of possible random grade values */
         /* re-add grade ranges */
-    }
 
     startofday:
     printf("DAY %d\n", day++);
@@ -112,8 +107,6 @@ main()
         printf("HISTORY GRADE: %.2g\n", historygrade);
     else
         printf("POTTERY GRADE: %.2g\n", potterygrade);
-
-    printf("DEBUG %d\n", cheat);
 
     expelled: printf("You got expelled.\n");
     end: printf("GAME OVER\n");

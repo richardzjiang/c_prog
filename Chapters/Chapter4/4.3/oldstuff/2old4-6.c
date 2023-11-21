@@ -3,6 +3,8 @@
 
 #define MAXOP	100	/* max size of operand or operator */
 #define NUMBER '0'	/* signal that a number was found */
+#define TRUE 1
+#define FALSE 0
 
 int getop(char []);
 void push(double);
@@ -16,6 +18,7 @@ main()
 	char s[MAXOP];
 
 	while ((type = getop(s)) != EOF) {
+		if (type > 'a' && type < 'z')
 		switch (type) {
 		case NUMBER:
 			push(atof(s));
@@ -147,6 +150,7 @@ void invar(char name, int value)
 		++index;
 	} else
 		varval[match] = value;
+	/* add ability to say "invar: too many variables". also, add number of vars macro, uppercase and lowercase vars */
 }
 
 int outvar(char name)
@@ -154,10 +158,17 @@ int outvar(char name)
 	extern char varname[26];
 	extern int varval[26];
 	extern int index;
+	int hasmatch;
 	int i;
 
-	for (i = 0; i < index; ++i)
-		if (varname[i] == name)
+	for (i = 0, hasmatch = FALSE; i < index; ++i)
+		if (varname[i] == name) {
+			hasmatch == TRUE;
 			break;
+		}
+	if (hasmatch == FALSE) {
+		printf("outvar: no value assigned to variable %c\n", name);
+		return 0;
+	}
 	return varval[i];
 }

@@ -37,15 +37,13 @@ main()
 
 	reset();
 
-	setgreen('L', 1);
-	setgreen('K', 5);
-	setgreen('Y', 5);
+	setgreen('C', 1);
 	setyellow('A', 1);
+	setyellow('U', 4);
 	setblack('B');
 	setblack('O');
-	setblack('U');
 	setblack('T');
-	setblack('C');
+	setblack('L');
 
 	while ((c = getchar()) != EOF) {
 		if (c == '\n') {
@@ -64,7 +62,6 @@ main()
 			}
 			if (isvalid == TRUE)
 				printf("%s\n", word);
-			isvalid = TRUE;
 			i = 0;
 			continue;
 		}
@@ -100,6 +97,7 @@ void setblack(char c)
 			break;	/* c does not need to be entered into black[] because it's already there */
 	}
 	black[blackindex++] = c;
+	black[blackindex] == '\0';
 }
 
 void setyellow(char c, int pos)
@@ -135,7 +133,7 @@ int checkstatus(char c, int status, int pos)
 	c = upper(c);
 
 	if (status == BLACK) {
-		for (i = 0; i < 26; ++i) {
+		for (i = 0; black[i] != '\0'; ++i) {
 			if (black[i] == c)
 				return TRUE;
 		}

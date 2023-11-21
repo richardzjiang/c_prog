@@ -188,6 +188,7 @@ main()
 			}
 			push((int) op1 % (int) op2);
 			break;
+		//case '&':
 		case '=':
 			invar(lastvar, pop());
 			push(0);
